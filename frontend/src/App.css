@@ -1,0 +1,42 @@
+.alert {
+  animation: slide-in 0.5s ease-in-out forwards;
+  border-radius: 8px; /* Rounded corners */
+  padding: 12px 20px; /* Increased padding for better spacing */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Subtle shadow effect */
+  font-weight: bold; /* Bold text for emphasis */
+  margin: 10px 0; /* Space between alerts */
+}
+
+@keyframes slide-in {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.alert[status="success"] {
+  background: linear-gradient(
+    135deg,
+    #052105,
+    #050505
+  ); /* Gradient background */
+  color: rgb(243, 239, 239); /* White text for contrast */
+}
+
+.alert[status="error"] {
+  background: linear-gradient(
+    135deg,
+    #f74c4c,
+    #b03030
+  ); /* Gradient background */
+  color: white; /* White text for contrast */
+}
+
+/* Optional: You can add hover effects */
+.alert:hover {
+  transform: scale(1.02); /* Slightly scale on hover for effect */
+}
