@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
 import {
   Box,
@@ -10,6 +11,8 @@ import {
   Spinner,
   Alert,
   AlertIcon,
+  Flex,
+  Spacer,
 } from "@chakra-ui/react";
 import axios from "axios";
 import SpeechRecognition, {
@@ -18,6 +21,7 @@ import SpeechRecognition, {
 import { HiSpeakerWave } from "react-icons/hi2";
 import { FaStopCircle } from "react-icons/fa";
 import LanguagesSelect from "./components/LanguagesSelect";
+import { useNavigate } from "react-router-dom";
 
 const App = () => {
   const [sourceText, setSourceText] = useState("");
@@ -27,6 +31,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [alertVisible, setAlertVisible] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
+  const navigate = useNavigate();
   const {
     transcript,
     listening,
@@ -40,11 +45,12 @@ const App = () => {
     }
   }, [transcript]);
 
+  // Handle translation
   const handleTranslate = async () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "https://multilingual-text-and-speech-translator.onrender.com/translate-text",
+        "http://localhost:8080/translate-text",
         {
           text: sourceText,
           sourceLang,
@@ -61,14 +67,16 @@ const App = () => {
     }
   };
 
+  // Show alert
   const showAlert = (message, status) => {
     setAlertMessage(message);
     setAlertVisible(true);
     setTimeout(() => {
       setAlertVisible(false);
-    }, 3000); // Alert visible for 3 seconds
+    }, 3000);
   };
 
+  // Handle speech to text
   const handleSpeechToText = () => {
     if (listening) {
       SpeechRecognition.stopListening();
@@ -78,6 +86,7 @@ const App = () => {
     }
   };
 
+  // Handle text to speech
   const handleTextToSpeech = () => {
     if ("speechSynthesis" in window) {
       const utterance = new SpeechSynthesisUtterance(translatedText);
@@ -88,12 +97,24 @@ const App = () => {
     }
   };
 
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Clear token
+    navigate("/"); // Redirect to landing page
+  };
+
   if (!browserSupportsSpeechRecognition) {
     return <span>Browser doesn't support speech recognition.</span>;
   }
 
   return (
     <Box p={5} maxW="container.md" mx="auto" bg="#121212">
+      <Flex>
+        <Spacer />
+        <Button onClick={handleLogout} colorScheme="red" mb={4}>
+          Logout
+        </Button>
+      </Flex>
       <VStack spacing={5} w="100%">
         <Textarea
           placeholder="Enter text to translate"
@@ -186,16 +207,16 @@ const App = () => {
       {alertVisible && (
         <Alert
           status={alertMessage.includes("Error") ? "error" : "success"}
-          variant={alertMessage.includes("Error") ? "error" : "success"} // Use the variant from theme.js
+          variant={alertMessage.includes("Error") ? "error" : "success"}
           mt={5}
           position="fixed"
           bottom="20px"
           left="50%"
           transform="translateX(-50%)"
           width="90%"
-          borderRadius="8px" // Optional: Use theme styling instead
-          padding="12px 20px" // Optional: Use theme styling instead
-          boxShadow="0 4px 20px rgba(0, 0, 0, 0.2)" // Optional: Use theme styling instead
+          borderRadius="8px"
+          padding="12px 20px"
+          boxShadow="0 4px 20px rgba(0, 0, 0, 0.2)"
           animation="slide-in 0.5s ease-in-out forwards"
         >
           <AlertIcon />
